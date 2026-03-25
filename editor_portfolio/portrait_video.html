@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Showcase – Brigitte Schwartz</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: #413f3f; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ── BACK BUTTON ── */
+  .back-btn {
+    position: fixed; top: 1.2rem; left: 1.2rem; z-index: 100;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.72rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: rgba(255,255,255,0.6);
+    background: rgba(26,26,26,0.88);
+    border: 1.5px solid rgba(255,255,255,0.14);
+    border-radius: 50px; padding: 0.5rem 1.1rem 0.5rem 0.85rem;
+    backdrop-filter: blur(10px); cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, transform 0.18s;
+    animation: fadeIn 0.5s ease both;
+  }
+  .back-btn svg { width: 14px; height: 14px; transition: transform 0.2s; }
+  .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.45); transform: translateX(-2px); }
+  .back-btn:hover svg { transform: translateX(-2px); }
+
+  /* ── PAGE WRAPPER ── */
+  .page {
+    width: min(96vw, 1200px);
+    margin: 2vh auto;
+    background: #1a1a1a;
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+    padding: 2rem 2.5rem 1.8rem;
+    animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .page::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.04; pointer-events: none;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.6rem;
+    position: relative; z-index: 2;
+  }
+  .header-left { display: flex; flex-direction: column; gap: 0.15rem; }
+  .eyebrow {
+    font-family: 'Barlow', sans-serif; font-weight: 300;
+    font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: ''; width: 20px; height: 1px;
+    background: rgba(255,255,255,0.28); display: inline-block;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(1.6rem, 3vw, 2.6rem);
+    color: #fff; text-transform: uppercase;
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .counter {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    color: rgba(255,255,255,0.18); letter-spacing: 0.05em; white-space: nowrap;
+  }
+  .counter span { color: rgba(255,255,255,0.65); }
+
+  /* ── MAIN LAYOUT: portrait player | info+strip ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.6rem;
+    align-items: start;
+    position: relative; z-index: 2;
+  }
+
+  /* ── PORTRAIT PLAYER COLUMN ── */
+  .player-col { display: flex; flex-direction: column; gap: 0.8rem; }
+
+  .video-player {
+    /* True portrait container: width is narrow, height is tall (9:16) */
+    width: clamp(180px, 22vw, 260px);
+    height: calc(clamp(180px, 22vw, 260px) * 16 / 9);
+    background: #0d0d0d;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+
+  .video-thumb {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 16px; overflow: hidden;
+  }
+  .thumb-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #1e1e1e 0%, #0d0d0d 60%, #181818 100%);
+  }
+  .thumb-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 3px
+    );
+  }
+  .thumb-overlay {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.6) 100%);
+  }
+  .thumb-num {
+    position: absolute; bottom: 1rem; left: 0.9rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(3rem, 6vw, 5.5rem);
+    color: rgba(255,255,255,0.04); line-height: 1;
+    user-select: none; letter-spacing: -0.02em;
+  }
+  .gdrive-badge {
+    position: absolute; top: 0.7rem; left: 50%; transform: translateX(-50%);
+    z-index: 3; display: flex; align-items: center; gap: 0.3rem;
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px; padding: 0.22rem 0.65rem 0.22rem 0.45rem;
+    backdrop-filter: blur(6px); white-space: nowrap;
+  }
+  .gdrive-badge svg { width: 11px; height: 11px; }
+  .gdrive-badge span {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.42);
+  }
+  .play-btn {
+    width: clamp(40px, 5vw, 58px); height: clamp(40px, 5vw, 58px);
+    position: relative; z-index: 2; transition: transform 0.2s;
+  }
+  .video-player:hover .play-btn { transform: scale(1.1); }
+  .play-btn svg { width: 100%; height: 100%; }
+
+  iframe.video-frame {
+  display: none;
+  position: absolute;
+  top: 0;
+
+  /* 🔥 shift left to hide internal margin */
+  left: -30px;
+
+  /* 🔥 increase width to compensate */
+  width: calc(100% + 60px);
+
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+}
+
+  /* Nav under player */
+  .player-nav {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 0.5rem;
+  }
+  .nav-arrows { display: flex; gap: 0.5rem; }
+  .vid-btn {
+    width: 32px; height: 32px;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 50%; background: transparent;
+    color: rgba(255,255,255,0.5); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+  }
+  .vid-btn:hover { background: #fff; border-color: #fff; color: #1a1a1a; transform: scale(1.08); }
+  .vid-btn svg { width: 13px; height: 13px; }
+  .vid-btn:disabled { opacity: 0.2; pointer-events: none; }
+
+  .drive-open-link {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.28); text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 50px;
+    padding: 0.24rem 0.7rem;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .drive-open-link:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+  .drive-open-link svg { width: 9px; height: 9px; }
+
+  /* ── INFO COLUMN ── */
+  .info-col {
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    gap: 1.2rem;
+  }
+
+  .info-top { display: flex; flex-direction: column; gap: 0.65rem; }
+
+  .video-tag {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.32); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 50px; padding: 0.22rem 0.75rem;
+    display: inline-block; width: fit-content;
+  }
+  .video-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(1.1rem, 2vw, 1.8rem); color: #fff;
+    text-transform: uppercase; letter-spacing: -0.01em; line-height: 1;
+  }
+  .video-desc {
+    font-family: 'Barlow', sans-serif; font-weight: 300;
+    font-size: clamp(0.68rem, 0.9vw, 0.8rem);
+    color: rgba(255,255,255,0.38); line-height: 1.75;
+  }
+  .video-meta { display: flex; align-items: center; gap: 1rem; }
+  .video-duration {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.88rem; color: rgba(255,255,255,0.5); letter-spacing: 0.05em;
+  }
+  .video-year {
+    font-family: 'Barlow', sans-serif; font-weight: 300;
+    font-size: 0.68rem; color: rgba(255,255,255,0.2); letter-spacing: 0.1em;
+  }
+
+  /* ── VERTICAL THUMBNAIL STRIP ── */
+  .strip-label-row {
+    font-family: 'Barlow', sans-serif; font-weight: 600;
+    font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.2); margin-bottom: 0.5rem;
+  }
+  .strip {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    max-height: 100%; overflow-y: auto; scrollbar-width: none;
+  }
+  .strip::-webkit-scrollbar { display: none; }
+
+  .strip-item {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid rgba(255,255,255,0.06);
+    border-radius: 10px; cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .strip-item:hover { background: rgba(255,255,255,0.07); transform: translateX(3px); }
+  .strip-item.active {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  /* mini portrait thumb inside strip */
+  .strip-thumb {
+    width: 28px; height: 50px;
+    border-radius: 6px; background: #111;
+    flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .strip-thumb-n {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 0.85rem; color: rgba(255,255,255,0.18); letter-spacing: -0.02em;
+  }
+  .strip-item.active .strip-thumb { border-color: rgba(255,255,255,0.35); }
+  .strip-item.active .strip-thumb-n { color: rgba(255,255,255,0.5); }
+
+  .strip-info { display: flex; flex-direction: column; gap: 0.15rem; overflow: hidden; }
+  .strip-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.72rem; color: rgba(255,255,255,0.7);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .strip-item.active .strip-title { color: #fff; }
+  .strip-tag {
+    font-family: 'Barlow', sans-serif; font-weight: 300;
+    font-size: 0.58rem; color: rgba(255,255,255,0.25);
+    letter-spacing: 0.05em;
+  }
+
+  /* switching fade */
+  .player-col.switching .video-player {
+    opacity: 0; transform: scale(0.98);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .info-col.switching .video-title,
+  .info-col.switching .video-desc,
+  .info-col.switching .video-tag {
+    opacity: 0; transform: translateY(5px);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  
+
+  @media (max-width: 600px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .video-player { width: 100%; max-width: 260px; margin: 0 auto; }
+    .page { padding: 1.4rem 1.2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Back button -->
+<button class="back-btn" onclick="history.back()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5M12 5l-7 7 7 7"/>
+  </svg>
+  Back
+</button>
+
+<div style="height:2vh"></div>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <span class="eyebrow">Selected Works</span>
+      <h2 class="section-title">Video Showcase</h2>
+    </div>
+    <div class="counter"><span id="currentNum">01</span> / <span id="totalNum">05</span></div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="main-layout">
+
+    <!-- Left: portrait player -->
+    <div class="player-col" id="playerCol">
+      <div class="video-player" id="videoPlayer">
+        <div class="video-thumb" id="videoThumb">
+          <div class="thumb-bg"></div>
+          <div class="thumb-overlay"></div>
+          <div class="thumb-num" id="thumbNum">01</div>
+          <div class="gdrive-badge">
+            <svg viewBox="0 0 87.3 78" fill="none">
+              <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA"/>
+              <path d="M43.65 25L29.9 1.2C28.55.4 27 0 25.45 0c-1.55 0-3.1.4-4.45 1.2L6.6 11.3 0 23.5h27.5z" fill="#00AC47"/>
+              <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.35z" fill="#EA4335"/>
+              <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.95 0H34.35c-1.55 0-3.1.4-4.45 1.2z" fill="#00832D"/>
+              <path d="M59.8 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.45 1.2h50.9c1.55 0 3.1-.4 4.45-1.2z" fill="#2684FC"/>
+              <path d="M73.4 11.3L59.65 1.2C58.3.4 56.75 0 55.2 0s-3.1.4-4.45 1.2L57.4 25H87.3z" fill="#FFBA00"/>
+            </svg>
+            <span>Drive</span>
+          </div>
+          <div class="play-btn" id="playBtn">
+            <svg viewBox="0 0 60 60" fill="none">
+              <circle cx="30" cy="30" r="29" stroke="white" stroke-width="1.5" opacity="0.35"/>
+              <polygon points="24,18 46,30 24,42" fill="white"/>
+            </svg>
+          </div>
+        </div>
+        <iframe class="video-frame" id="videoFrame" src=""
+          allow="autoplay; fullscreen" allowfullscreen></iframe>
+      </div>
+
+      <!-- Prev/Next + open link -->
+      <div class="player-nav">
+        <div class="nav-arrows">
+          <button class="vid-btn" id="prevBtn" onclick="changeVideo(-1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="vid-btn" id="nextBtn" onclick="changeVideo(1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <a class="drive-open-link" id="driveLink" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Open in Drive
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: info + vertical strip -->
+    <div class="info-col" id="infoCol">
+
+      <div class="info-top">
+        <span class="video-tag" id="videoTag">—</span>
+        <h3 class="video-title" id="videoTitle">—</h3>
+        <p class="video-desc" id="videoDesc">—</p>
+        <div class="video-meta">
+          <span class="video-duration" id="videoDuration">—</span>
+          <span class="video-year" id="videoYear">—</span>
+        </div>
+      </div>
+
+      <!-- Vertical thumbnail list -->
+      <div>
+        <div class="strip-label-row">All Videos</div>
+        <div class="strip" id="videoStrip"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<div style="height:2vh"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  ADD YOUR GOOGLE DRIVE VIDEOS HERE
+//  driveUrl → Google Drive share link
+//  e.g. "https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
+// ══════════════════════════════════════════════════
+const videos = [
+  {
+    driveUrl: "https://drive.google.com/file/d/1CnKS-uhH_0b-JPt-TmX-beemV0bjEBWf/view?usp=drive_link",
+    title:    "Brand Campaign — Summer 2024",
+    tag:      "Commercial",
+    desc:     "Full video production and color grading for a global fashion brand. Shot on RED Cinema, edited in Premiere Pro.",
+    duration: "2:34",
+    year:     "2024"
+  },
+  {
+    driveUrl: "https://drive.google.com/file/d/YOUR_FILE_ID_2/view?usp=sharing",
+    title:    "City Life — Documentary Short",
+    tag:      "Documentary",
+    desc:     "A short cinematic documentary exploring urban culture and street photography.",
+    duration: "4:12",
+    year:     "2023"
+  },
+  {
+    driveUrl: "https://drive.google.com/file/d/YOUR_FILE_ID_3/view?usp=sharing",
+    title:    "Product Launch — Tech Startup",
+    tag:      "Corporate",
+    desc:     "Dynamic product reveal with motion graphics and 3D elements.",
+    duration: "1:48",
+    year:     "2024"
+  },
+  {
+    driveUrl: "https://drive.google.com/file/d/YOUR_FILE_ID_4/view?usp=sharing",
+    title:    "Music Video — Indie Artist",
+    tag:      "Music Video",
+    desc:     "Cinematic music video with split-screen editing and vintage color grades.",
+    duration: "3:55",
+    year:     "2023"
+  },
+  {
+    driveUrl: "https://drive.google.com/file/d/YOUR_FILE_ID_5/view?usp=sharing",
+    title:    "Wedding Highlight Reel",
+    tag:      "Event",
+    desc:     "Emotional highlight reel with slow-motion sequences and aerial footage.",
+    duration: "5:20",
+    year:     "2024"
+  }
+];
+
+function toEmbed(url) {
+  if (url.includes('/preview')) return url;
+  const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+  return m ? `https://drive.google.com/file/d/${m[1]}/preview` : url;
+}
+
+let current = 0;
+
+function buildStrip() {
+  const strip = document.getElementById('videoStrip');
+  strip.innerHTML = '';
+  videos.forEach((v, i) => {
+    const el = document.createElement('div');
+    el.className = 'strip-item' + (i === 0 ? ' active' : '');
+    el.onclick = () => goTo(i);
+    el.innerHTML = `
+      <div class="strip-thumb">
+        <span class="strip-thumb-n">${String(i+1).padStart(2,'0')}</span>
+      </div>
+      <div class="strip-info">
+        <span class="strip-title">${v.title}</span>
+        <span class="strip-tag">${v.tag} · ${v.duration}</span>
+      </div>`;
+    strip.appendChild(el);
+  });
+  document.getElementById('totalNum').textContent = String(videos.length).padStart(2,'0');
+}
+
+function updateUI(idx) {
+  const v = videos[idx];
+  const pcol = document.getElementById('playerCol');
+  const icol = document.getElementById('infoCol');
+  pcol.classList.add('switching');
+  icol.classList.add('switching');
+
+  setTimeout(() => {
+    document.getElementById('videoTag').textContent      = v.tag;
+    document.getElementById('videoTitle').textContent    = v.title;
+    document.getElementById('videoDesc').textContent     = v.desc;
+    document.getElementById('videoDuration').textContent = v.duration;
+    document.getElementById('videoYear').textContent     = v.year;
+    document.getElementById('currentNum').textContent    = String(idx+1).padStart(2,'0');
+    document.getElementById('thumbNum').textContent      = String(idx+1).padStart(2,'0');
+
+    const dl = document.getElementById('driveLink');
+    dl.href = v.driveUrl;
+    dl.style.display = v.driveUrl.includes('YOUR_FILE_ID') ? 'none' : 'inline-flex';
+
+    const frame = document.getElementById('videoFrame');
+    frame.src = ''; frame.style.display = 'none';
+    document.getElementById('videoThumb').style.display = 'flex';
+
+    document.querySelectorAll('.strip-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+    const si = document.querySelectorAll('.strip-item');
+    if (si[idx]) si[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    document.getElementById('prevBtn').disabled = idx === 0;
+    document.getElementById('nextBtn').disabled = idx === videos.length - 1;
+
+    pcol.classList.remove('switching');
+    icol.classList.remove('switching');
+    [pcol, icol].forEach(col => {
+      col.querySelectorAll('.video-player,.video-title,.video-desc,.video-tag').forEach(el => {
+        el.style.opacity = '1'; el.style.transform = 'none';
+        el.style.transition = 'opacity 0.2s, transform 0.2s';
+      });
+    });
+  }, 160);
+}
+
+function goTo(idx) { current = idx; updateUI(idx); }
+function changeVideo(dir) {
+  const n = current + dir;
+  if (n >= 0 && n < videos.length) goTo(n);
+}
+
+document.getElementById('playBtn').addEventListener('click', () => {
+  const v = videos[current];
+  if (!v.driveUrl.includes('YOUR_FILE_ID')) {
+    const frame = document.getElementById('videoFrame');
+    frame.src = toEmbed(v.driveUrl);
+    frame.style.display = 'block';
+    document.getElementById('videoThumb').style.display = 'none';
+  } else {
+    const btn = document.getElementById('playBtn');
+    btn.style.transform = 'scale(0.88)';
+    setTimeout(() => btn.style.transform = '', 140);
+  }
+});
+
+buildStrip();
+updateUI(0);
+document.getElementById('prevBtn').disabled = true;
+</script>
+
+</body>
+</html>

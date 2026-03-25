@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About – Muhammed Lehan</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 100%; background: #413f3f; scroll-behavior: smooth; }
+
+  /* ── CARD ── */
+  .card {
+    width: min(96vw, 1400px);
+    margin: 2vh auto;
+    background: #1a1a1a;
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Grain texture */
+  .card::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.045;
+    pointer-events: none;
+  }
+
+  /* ── TOP BAR ── */
+  .about-topbar {
+    position: relative; z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 3.2rem 4rem 0;
+    animation: fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.05s both;
+  }
+
+  .about-topbar-left { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .about-topbar-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 4vw, 4.4rem);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+
+  .about-topbar-title {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+    color: rgba(255,255,255,0.38);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .about-topbar-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+    text-align: right;
+  }
+
+  .about-contact-link {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.38);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .about-contact-link:hover { color: rgba(255,255,255,0.8); }
+  .about-contact-link span {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* ── 3-COL BODY ── */
+  .about-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.05fr 1.4fr 1.05fr;
+    gap: 0;
+    padding: 2.5rem 4rem 2rem;
+    position: relative;
+    z-index: 5;
+    animation: fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+  }
+
+  .about-col {
+    padding: 0 2.5rem;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+  }
+  .about-col:first-child { padding-left: 0; }
+  .about-col:last-child  { border-right: none; padding-right: 0; }
+
+  /* ── SECTION LABELS ── */
+  .about-section-label {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .about-section-label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ── SUMMARY ── */
+  .about-summary {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: clamp(0.92rem, 1.2vw, 1.06rem);
+    color: rgba(255,255,255,0.55);
+    line-height: 1.95;
+  }
+
+  /* ── EDUCATION ── */
+  .about-edu-item {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .about-edu-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .about-edu-item:first-child { padding-top: 0; }
+
+  .about-edu-degree {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.15;
+  }
+  .about-edu-school {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.38);
+    margin-top: 0.2rem;
+  }
+  .about-edu-year {
+    display: inline-block;
+    margin-top: 0.35rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    padding: 0.15rem 0.55rem;
+  }
+
+  /* ── EXPERIENCE ── */
+  .about-exp-item {
+    padding: 1rem 0 1rem 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .about-exp-item::before {
+    content: '';
+    position: absolute; left: 0; top: 1.45rem;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+  }
+  .about-exp-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .about-exp-item:first-child { padding-top: 0; }
+  .about-exp-item:first-child::before { top: 0.45rem; }
+
+  .about-exp-role {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+  }
+  .about-exp-meta {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-top: 0.25rem; flex-wrap: wrap;
+  }
+  .about-exp-company {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.42);
+  }
+  .about-exp-duration {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    border-left: 1px solid rgba(255,255,255,0.15);
+    padding-left: 0.6rem;
+  }
+  .about-exp-desc {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.8;
+    margin-top: 0.45rem;
+  }
+
+  /* ── SKILLS ── */
+  .about-skills-block { display: flex; flex-direction: column; gap: 1.2rem; }
+  .about-skills-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .about-skills-group-title {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+  }
+  .about-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .about-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 0.28rem 0.65rem;
+    transition: border-color 0.2s, color 0.2s;
+    cursor: default;
+  }
+  .about-tag:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+  /* ── LANGUAGES ── */
+  .about-langs { display: flex; flex-direction: column; }
+  .about-lang-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .about-lang-row:last-child { border-bottom: none; }
+  .about-lang-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+  }
+  .about-lang-level {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.28);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── STRENGTHS ── */
+  .about-strengths { display: flex; flex-direction: column; }
+  .about-strength-item {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.75;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; align-items: flex-start; gap: 0.8rem;
+  }
+  .about-strength-item:last-child { border-bottom: none; }
+  .about-strength-item::before {
+    content: '—';
+    color: rgba(255,255,255,0.18);
+    flex-shrink: 0;
+  }
+
+  /* ── BIG TITLE BOTTOM ── */
+  .about-big-title {
+    position: relative; z-index: 4;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(5rem, 14.2vw, 18rem);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.82;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 3rem;
+    overflow: hidden;
+    animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+    user-select: none;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .about-body { grid-template-columns: 1fr 1.3fr; padding: 2rem 2.5rem; }
+    .about-col:nth-child(2) { border-right: none; }
+    .about-col:nth-child(3) {
+      grid-column: 1 / -1;
+      border-right: none; border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 1.8rem 0 0; flex-direction: row; flex-wrap: wrap; gap: 2rem;
+    }
+    .about-col:nth-child(3) > * { flex: 1; min-width: 220px; }
+  }
+  @media (max-width: 750px) {
+    .card { border-radius: 20px; }
+    .about-topbar { padding: 2.5rem 2rem 0; flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .about-topbar-right { align-items: flex-start; }
+    .about-body { grid-template-columns: 1fr; padding: 2rem; gap: 2rem; }
+    .about-col { border-right: none; padding: 0; border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 2rem; }
+    .about-col:nth-child(3) { flex-direction: column; }
+    .about-big-title { font-size: clamp(3rem, 12vw, 6rem); }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- ── TOP BAR ── -->
+  <div class="about-topbar">
+    <div class="about-topbar-left">
+      <div class="about-topbar-name">Muhammed Lehan</div>
+      <div class="about-topbar-title">Video Editor &amp; Web Developer · Nilambur, Kerala, India</div>
+    </div>
+    <div class="about-topbar-right">
+      <a href="mailto:mhdlehanpk@gmail.com" class="about-contact-link"><span>✉</span> mhdlehanpk@gmail.com</a>
+      <a href="tel:+918590900463" class="about-contact-link"><span>☏</span> +91 8590900463</a>
+      <a href="https://linkedin.com/in/muhammed-lehanpk" class="about-contact-link" target="_blank"><span>in</span> linkedin.com/in/muhammed-lehanpk</a>
+    </div>
+  </div>
+
+  <!-- ── 3-COL BODY ── -->
+  <div class="about-body">
+
+    <!-- COL 1 — Profile + Education -->
+    <div class="about-col">
+
+      <div>
+        <div class="about-section-label">Profile</div>
+        <p class="about-summary">
+          Creative and detail-oriented Video Editor and Web Developer with over 2 years of professional experience in content creation, video production, and web development. Skilled in crafting impactful digital stories and building responsive websites using modern technologies. Passionate about delivering visually engaging content and innovative web experiences that connect audiences with brands.
+        </p>
+      </div>
+
+      <div>
+        <div class="about-section-label">Education</div>
+        <div class="about-edu-item">
+          <div class="about-edu-degree">Bachelor of Computer Applications</div>
+          <div class="about-edu-school">Jamiya Nadwiyya, Edavanna</div>
+          <span class="about-edu-year">Graduated 2024</span>
+        </div>
+        <div class="about-edu-item">
+          <div class="about-edu-degree">Higher Secondary (+2)</div>
+          <div class="about-edu-school">NHS Erumamunda</div>
+        </div>
+        <div class="about-edu-item">
+          <div class="about-edu-degree">SSLC (10th)</div>
+          <div class="about-edu-school">Mar Thoma Higher Secondary School</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL 2 — Experience -->
+    <div class="about-col">
+      <div class="about-section-label">Professional Experience</div>
+
+      <div class="about-exp-item">
+        <div class="about-exp-role">Content Creator, Script Writer &amp; Video Editor</div>
+        <div class="about-exp-meta">
+          <span class="about-exp-company">Orryzen Media Management</span>
+          <span class="about-exp-duration">2 Years</span>
+        </div>
+        <p class="about-exp-desc">Developed creative video content and brand campaigns for social media. Handled post-production including editing, color correction, and sound design. Wrote scripts aligned with marketing goals and collaborated with teams.</p>
+      </div>
+
+      <div class="about-exp-item">
+        <div class="about-exp-role">Video Editor</div>
+        <div class="about-exp-meta">
+          <span class="about-exp-company">Orryzen Technology</span>
+          <span class="about-exp-duration">1 Year</span>
+        </div>
+        <p class="about-exp-desc">Edited promotional and corporate videos using Adobe Premiere Pro, After Effects, VN, and CapCut. Improved storytelling with transitions, effects, and audio balancing.</p>
+      </div>
+
+      <div class="about-exp-item">
+        <div class="about-exp-role">Web Developer (Intern)</div>
+        <div class="about-exp-meta">
+          <span class="about-exp-company">SMEC Technology</span>
+          <span class="about-exp-duration">6 Months</span>
+        </div>
+        <p class="about-exp-desc">Built and maintained websites using HTML, CSS, JavaScript, Python (Django), and MySQL. Assisted in backend integration and responsive UI. Used VS Code and PyCharm for development.</p>
+      </div>
+
+    </div>
+
+    <!-- COL 3 — Skills + Languages + Strengths -->
+    <div class="about-col">
+
+      <div>
+        <div class="about-section-label">Technical Skills</div>
+        <div class="about-skills-block">
+          <div class="about-skills-group">
+            <div class="about-skills-group-title">Video Editing</div>
+            <div class="about-tags">
+              <span class="about-tag">Premiere Pro</span>
+              <span class="about-tag">After Effects</span>
+              <span class="about-tag">VN</span>
+              <span class="about-tag">CapCut</span>
+            </div>
+          </div>
+          <div class="about-skills-group">
+            <div class="about-skills-group-title">Design</div>
+            <div class="about-tags">
+              <span class="about-tag">Canva</span>
+              <span class="about-tag">Figma</span>
+              <span class="about-tag">Poster Design</span>
+              <span class="about-tag">PPT Design</span>
+            </div>
+          </div>
+          <div class="about-skills-group">
+            <div class="about-skills-group-title">Web Development</div>
+            <div class="about-tags">
+              <span class="about-tag">HTML</span>
+              <span class="about-tag">CSS</span>
+              <span class="about-tag">JavaScript</span>
+              <span class="about-tag">Python</span>
+              <span class="about-tag">Django</span>
+              <span class="about-tag">MySQL</span>
+            </div>
+          </div>
+          <div class="about-skills-group">
+            <div class="about-skills-group-title">Dev Tools</div>
+            <div class="about-tags">
+              <span class="about-tag">VS Code</span>
+              <span class="about-tag">PyCharm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="about-section-label">Languages</div>
+        <div class="about-langs">
+          <div class="about-lang-row">
+            <span class="about-lang-name">Malayalam</span>
+            <span class="about-lang-level">Expert · Speak, Read, Write</span>
+          </div>
+          <div class="about-lang-row">
+            <span class="about-lang-name">English</span>
+            <span class="about-lang-level">Speak, Read, Write</span>
+          </div>
+          <div class="about-lang-row">
+            <span class="about-lang-name">Arabic</span>
+            <span class="about-lang-level">Read &amp; Write</span>
+          </div>
+          <div class="about-lang-row">
+            <span class="about-lang-name">Hindi</span>
+            <span class="about-lang-level">Read &amp; Write</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="about-section-label">Key Strengths</div>
+        <div class="about-strengths">
+          <div class="about-strength-item">Creative storytelling and visual editing expertise</div>
+          <div class="about-strength-item">Strong foundation in both design and development</div>
+          <div class="about-strength-item">Effective time management and teamwork</div>
+          <div class="about-strength-item">Adaptability to new tools and workflows</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── BIG BOTTOM TITLE ── -->
+  <div class="about-big-title">ABOUT ME</div>
+
+</div>
+
+<div style="height:2vh"></div>
+</body>
+</html>
